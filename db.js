@@ -171,7 +171,7 @@ async function connectionDB() {
           }
         }
 
-        // INSERT INTO voters (username, voter_id) VALUES (...)
+        // INSERT INTO voters (username, voter_id, phone) VALUES (...)
         if (sqlUpper.includes("INSERT INTO VOTERS")) {
           if (mongoConnected) {
             const lastVoter = await Voter.findOne()
@@ -182,6 +182,7 @@ async function connectionDB() {
               id: newId,
               username: params.u,
               voter_id: params.v,
+              phone: params.p,
             });
             await newVoter.save();
             return { rowsAffected: 1 };
@@ -192,6 +193,7 @@ async function connectionDB() {
               id: newId,
               username: params.u,
               voter_id: params.v,
+              phone: params.p,
             });
             return { rowsAffected: 1 };
           }

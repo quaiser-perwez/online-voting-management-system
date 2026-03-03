@@ -100,6 +100,8 @@ router.get("/register", (req, res) => {
 
 router.post("/register", async (req, res) => {
   const { name, voterId, phone } = req.body;
+  // keep prefill data in case we need to re-render
+  const prefill = { name, voterId, phone };
   try {
     const conn = await connectionDB();
     await conn.execute(
@@ -108,10 +110,10 @@ router.post("/register", async (req, res) => {
       { autoCommit: true }
     );
     await conn.close();
-    return res.render("register", { success: "Registration successful! You may now login.", error: null });
+    return res.render("register", { success: "Registration successful! You may now login.", error: null, prefill });
   } catch (err) {
     console.error("Registration error:", err);
-    return res.render("register", { error: "Error registering: " + err.message, success: null });
+    return res.render("register", { error: "Error registering: " + err.message, success: null, prefill });
   }
 });
 
