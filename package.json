@@ -4,12 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "keywords": [],
-  "author": "",
+  "author": "Your Name <you@example.com>",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
@@ -17,7 +17,13 @@
     "ejs": "^4.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "mongoose": "^9.2.3",
+    "mongoose": "^9.2.3"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/username/online-voting-management-system.git"
   }
 }
