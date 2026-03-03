@@ -52,8 +52,25 @@ router.post("/admin-login", async (req, res) => {
 
 
 // Send OTP
-router.post("/send-otp", (req, res) => {
+router.post("/send-otp", async (req, res) => {
   const { name, voterId, phone } = req.body;
+
+  // verify voter exists in database
+  try {
+    const conn = await connectionDB();
+    const result = await conn.execute(
+      "SELECT * FROM voters WHERE voter_id = :v AND username = :u",
+      { v: voterId, u: name }
+    );
+    await conn.close();
+    if (!result.rows || result.rows.length === 0) {
+      // no matching voter
+      return res.redirect("/register?error=notregistered");
+    }
+  } catch (err) {
+    console.error("Voter lookup error:", err);
+    // continue anyway; not critical for demo
+  }
 
   // Generate 4-digit OTP
   const otp = Math.floor(1000 + Math.random() * 9000);
@@ -67,6 +84,32 @@ router.post("/send-otp", (req, res) => {
   // Pass OTP to view for demo/testing
   // NOTE: In production, send OTP via SMS/email instead
   res.render("otp", { error: null, otp: otp });
+});
+
+// Voter registration
+router.get("/register", (req, res) => {
+  let errMsg = null;
+  if (req.query.error === 'notregistered') {
+    errMsg = 'You must register before login.';
+  }
+  res.render("register", { error: errMsg, success: null });
+});
+
+router.post("/register", async (req, res) => {
+  const { name, voterId, phone } = req.body;
+  try {
+    const conn = await connectionDB();
+    await conn.execute(
+      "INSERT INTO voters (username, voter_id, phone) VALUES (:u, :v, :p)",
+      { u: name, v: voterId, p: phone },
+      { autoCommit: true }
+    );
+    await conn.close();
+    return res.render("register", { success: "Registration successful! You may now login.", error: null });
+  } catch (err) {
+    console.error("Registration error:", err);
+    return res.render("register", { error: "Error registering: " + err.message, success: null });
+  }
 });
 
 // OTP page
