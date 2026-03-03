@@ -26,18 +26,19 @@
 
         <div class="candidate-grid">
             <% candidates.forEach(c=> { %>
+                <% const name = c.NAME || c.name || 'Unknown'; %>
+                <% const party = c.PARTY || c.party || ''; %>
+                <% const id = (c.ID !== undefined) ? c.ID : c.id; %>
+                <% const votes = (c.VOTES !== undefined) ? c.VOTES : c.votes || 0; %>
                 <div class="candidate-card">
-                    <h3>
-                        <%= c.NAME %>
-                    </h3>
-                    <p>
-                        <%= c.PARTY %>
-                    </p>
-                    <form action="/vote/<%= c.ID %>" method="POST">
+                    <h3><%= name %></h3>
+                    <p><%= party %></p>
+                    <p style="font-size:0.9rem; color:#555; margin:8px 0;">Votes: <%= votes %></p>
+                    <form action="/vote/<%= id %>" method="POST">
                         <button type="submit" class="btn india-btn-primary">Vote Now</button>
                     </form>
                 </div>
-                <% }) %>
+            <% }) %>
         </div>
     </div>
 

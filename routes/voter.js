@@ -33,6 +33,8 @@ router.post("/vote/:id", async (req, res) => {
 			{ id },
 			{ autoCommit: true }
 		);
+		// set a session message so success page can show feedback
+		req.session.voteMessage = 'Your vote has been recorded. Thank you!';
 		return res.redirect("/success");
 	} catch (err) {
 		console.error('Error voting:', err);
@@ -44,7 +46,10 @@ router.post("/vote/:id", async (req, res) => {
 
 // Success Page
 router.get("/success", (req, res) => {
-	res.render("success");
+	const msg = req.session.voteMessage || null;
+	// clear the message after reading
+	delete req.session.voteMessage;
+	res.render("success", { message: msg });
 });
 
 // Results
