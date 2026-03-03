@@ -29,12 +29,23 @@ mongoose
     console.log("? MongoDB Connected");
     mongoConnected = true;
     initializeDatabase();
+    syncMemoryToMongo();
   })
   .catch((err) => {
     console.warn("? MongoDB unavailable - using in-memory database");
     console.warn("  Error:", err.message);
     console.warn("  Update .env with valid MONGO_URI to use MongoDB\n");
   });
+
+// also listen for reconnection events to flush any queued voters
+mongoose.connection.on('connected', () => {
+  if (!mongoConnected) {
+    mongoConnected = true;
+    console.log('? MongoDB reconnected, syncing memory');
+    syncMemoryToMongo();
+  }
+});
+
 
 // Define Mongoose Schemas
 const candidateSchema = new mongoose.Schema(
@@ -247,6 +258,26 @@ async function connectionDB() {
 }
 
 module.exports = { connectionDB };
+
+/**
+ * When we have stored voters in memory before Mongo was ready, push them
+ * into the real database so they survive restarts.
+ */
+async function syncMemoryToMongo() {
+  if (!mongoConnected || memoryDB.voters.length === 0) return;
+  for (const v of memoryDB.voters) {
+    try {
+      const exists = await Voter.findOne({ voter_id: v.voter_id });
+      if (!exists) {
+        const copy = new Voter(v);
+        await copy.save();
+        console.log('? Synced voter to Mongo:', v);
+      }
+    } catch (e) {
+      console.warn('! syncMemoryToMongo failed for', v, e.message);
+    }
+  }
+}
 
 /**
  * Initialize database with default admin and sample candidates
