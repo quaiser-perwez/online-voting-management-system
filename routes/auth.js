@@ -64,12 +64,14 @@ router.post("/send-otp", (req, res) => {
 
   console.log("OTP (demo):", otp);
 
-  res.redirect("/otp");
+  // Pass OTP to view for demo/testing
+  // NOTE: In production, send OTP via SMS/email instead
+  res.render("otp", { error: null, otp: otp });
 });
 
 // OTP page
 router.get("/otp", (req, res) => {
-  res.render("otp", { error: null });
+  res.render("otp", { error: null, otp: null });
 });
 
 // Verify OTP
@@ -93,7 +95,8 @@ router.post("/resend-otp", (req, res) => {
 
   console.log("New OTP:", newOtp);
 
-  res.render("otp", { error: "New OTP sent successfully!" });
+  // Pass new OTP to view for demo/testing
+  res.render("otp", { error: "New OTP sent successfully!", otp: newOtp });
 });
 
 

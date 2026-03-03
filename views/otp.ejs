@@ -21,6 +21,14 @@
 
     <h2 style="text-align:center; color:#0047AB;">Enter OTP</h2>
 
+    <% if (otp) { %>
+      <div style="background:#E8F5E9; border:2px solid #4CAF50; padding:15px; border-radius:8px; text-align:center; margin-bottom:20px;">
+        <p style="margin:0; color:#333; font-size:0.9rem;">Your test OTP is:</p>
+        <p style="margin:5px 0 0 0; color:#2E7D32; font-size:2rem; font-weight:bold; letter-spacing:5px;"><%= otp %></p>
+        <p style="margin:5px 0 0 0; color:#666; font-size:0.85rem;">Demo only - in production, OTP is sent via SMS/email</p>
+      </div>
+    <% } %>
+
     <% if (error) { %>
       <p style="color:red; text-align:center;"><%= error %></p>
     <% } %>
