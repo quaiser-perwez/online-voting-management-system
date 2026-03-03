@@ -54,26 +54,22 @@
                 </thead>
                 <tbody>
                     <% candidates.forEach(c=> { %>
+                        <% const id = (c.ID !== undefined) ? c.ID : c.id; %>
+                        <% const name = c.NAME || c.name || 'Unnamed'; %>
+                        <% const party = c.PARTY || c.party || ''; %>
+                        <% const votes = (c.VOTES !== undefined) ? c.VOTES : (c.votes || 0); %>
                         <tr>
+                            <td><%= id %></td>
+                            <td><%= name %></td>
+                            <td><%= party %></td>
+                            <td><%= votes %></td>
                             <td>
-                                <%= c.ID %>
-                            </td>
-                            <td>
-                                <%= c.NAME %>
-                            </td>
-                            <td>
-                                <%= c.PARTY %>
-                            </td>
-                            <td>
-                                <%= c.VOTES %>
-                            </td>
-                            <td>
-                                <a href="/admin/delete/<%= c.ID %>" class="btn btn-danger">
+                                <a href="/admin/delete/<%= id %>" class="btn btn-danger">
                                     Delete
                                 </a>
                             </td>
                         </tr>
-                        <% }) %>
+                    <% }) %>
                 </tbody>
             </table>
         </div>
