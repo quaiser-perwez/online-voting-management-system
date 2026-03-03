@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Login - Indian Voting System</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body class="india-theme">
+
+    <nav class="india-nav">
+        <div class="nav-brand">
+            <div class="ashoka-chakra">⊛</div>
+            <div class="logo-text">Indian Vote System</div>
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#" onclick="showAdmin()">Admin</a></li>
+            <li><a href="#" onclick="showVoter()">Voter</a></li>
+        </ul>
+    </nav>
+
+    <div class="flag-stripe"></div>
+
+    <div class="container" style="max-width: 400px">
+        <div class="card india-card">
+
+            <h2 id="formTitle" style="text-align:center; color:#0047AB;">Voter Login</h2>
+
+            <% if (error) { %>
+                <p style="color:red; text-align:center;">
+                    <%= error %>
+                </p>
+                <% } %>
+
+                    <form id="voterForm" action="/send-otp" method="POST">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" name="name" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Voter ID</label>
+                            <input type="text" name="voterId" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" name="phone" required />
+                        </div>
+
+                        <button type="submit" class="btn india-btn-primary" style="width:100%">
+                            Send OTP
+                        </button>
+                    </form>
+
+                    <!-- ADMIN FORM -->
+                    <form id="adminForm" action="/admin-login" method="POST" style="display:none;">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" name="username" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" name="password" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Role</label>
+                            <input type="text" name="role" value="admin" readonly />
+                        </div>
+
+                        <button type="submit" class="btn india-btn-primary" style="width:100%;">
+                            Admin Login
+                        </button>
+                    </form>
+
+        </div>
+    </div>
+
+    <script>
+        function showAdmin() {
+            document.getElementById("voterForm").style.display = "none";
+            document.getElementById("adminForm").style.display = "block";
+            document.getElementById("formTitle").innerText = "Admin Login";
+        }
+
+        function showVoter() {
+            document.getElementById("adminForm").style.display = "none";
+            document.getElementById("voterForm").style.display = "block";
+            document.getElementById("formTitle").innerText = "Voter Login";
+        }
+    </script>
+
+
+</body>
+
+</html>

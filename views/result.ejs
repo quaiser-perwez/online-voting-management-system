@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Live Results</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="india-theme">
+
+    <nav class="india-nav">
+        <div class="nav-brand">
+            <div class="ashoka-chakra">⊛</div>
+            <div class="logo-text">Election Results</div>
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </nav>
+
+    <div class="flag-stripe"></div>
+
+    <div class="container">
+        <h2 style="text-align:center;">🇮🇳 Live Election Results 🇮🇳</h2>
+
+        <div class="card india-card">
+            <% let totalVotes=0; %>
+                <% candidates.forEach(c=> { totalVotes += c.VOTES; }); %>
+
+                    <% candidates.forEach(c=> {
+                        let percent = totalVotes === 0 ? 0 : Math.round((c.VOTES / totalVotes) * 100);
+                        %>
+                        <div class="result-item">
+                            <strong>
+                                <%= c.NAME %> (<%= c.PARTY %>)
+                            </strong> - <%= c.VOTES %> votes
+                                <div class="progress-bar-tag">
+                                    <div class="progress-bar-fill" style="width: <%= percent %>%">
+                                        <%= percent %>%
+                                    </div>
+                                </div>
+                        </div>
+                        <% }) %>
+        </div>
+    </div>
+
+</body>
+
+</html>
