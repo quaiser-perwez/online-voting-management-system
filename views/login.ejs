@@ -37,17 +37,17 @@
                     <form id="voterForm" action="/send-otp" method="POST">
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" name="name" required />
+                            <input type="text" name="name" required value="<%= prefill ? prefill.name : '' %>" />
                         </div>
 
                         <div class="form-group">
                             <label>Voter ID</label>
-                            <input type="text" name="voterId" required />
+                            <input type="text" name="voterId" required value="<%= prefill ? prefill.voterId : '' %>" />
                         </div>
 
                         <div class="form-group">
                             <label>Phone</label>
-                            <input type="text" name="phone" required />
+                            <input type="text" name="phone" required value="<%= prefill ? prefill.phone : '' %>" />
                         </div>
 
                         <button type="submit" class="btn india-btn-primary" style="width:100%">

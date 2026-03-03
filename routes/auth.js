@@ -4,7 +4,9 @@ const { connectionDB } = require("../db");
 
 // Login page
 router.get("/login", (req, res) => {
-  res.render("login", { error: null });
+  // allow pre-filling voter lookup from query string (used by admin tool)
+  const { name = "", voterId = "", phone = "" } = req.query;
+  res.render("login", { error: null, prefill: { name, voterId, phone } });
 });
 
 
@@ -92,7 +94,8 @@ router.get("/register", (req, res) => {
   if (req.query.error === 'notregistered') {
     errMsg = 'You must register before login.';
   }
-  res.render("register", { error: errMsg, success: null });
+  const { name = "", voterId = "", phone = "" } = req.query;
+  res.render("register", { error: errMsg, success: null, prefill: { name, voterId, phone } });
 });
 
 router.post("/register", async (req, res) => {
