@@ -104,11 +104,12 @@ router.post("/register", async (req, res) => {
   const prefill = { name, voterId, phone };
   try {
     const conn = await connectionDB();
-    await conn.execute(
+    const result = await conn.execute(
       "INSERT INTO voters (username, voter_id, phone) VALUES (:u, :v, :p)",
       { u: name, v: voterId, p: phone },
       { autoCommit: true }
     );
+    console.log("[auth] registration result", result);
     await conn.close();
     return res.render("register", { success: "Registration successful! You may now login.", error: null, prefill });
   } catch (err) {

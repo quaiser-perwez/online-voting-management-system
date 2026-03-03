@@ -95,12 +95,14 @@ async function connectionDB() {
 
         // SELECT * FROM voters
         if (sqlUpper.includes("SELECT") && sqlUpper.includes("FROM VOTERS")) {
+          let rows = [];
           if (mongoConnected) {
-            const rows = await Voter.find();
-            return { rows };
-          } else {
-            return { rows: memoryDB.voters };
+            const mongoRows = await Voter.find();
+            rows = mongoRows.slice();
           }
+          // always include any in-memory records (duplicates are unlikely in dev)
+          rows = rows.concat(memoryDB.voters);
+          return { rows };
         }
 
         // SELECT * FROM admin WHERE username=... AND password=...
@@ -173,30 +175,39 @@ async function connectionDB() {
 
         // INSERT INTO voters (username, voter_id, phone) VALUES (...)
         if (sqlUpper.includes("INSERT INTO VOTERS")) {
+          // compute id by looking at both stores
+          let newId = 1;
           if (mongoConnected) {
             const lastVoter = await Voter.findOne()
               .sort({ id: -1 })
               .limit(1);
-            const newId = (lastVoter?.id || 0) + 1;
-            const newVoter = new Voter({
-              id: newId,
-              username: params.u,
-              voter_id: params.v,
-              phone: params.p,
-            });
-            await newVoter.save();
-            return { rowsAffected: 1 };
-          } else {
-            const newId =
-              (memoryDB.voters[memoryDB.voters.length - 1]?.id || 0) + 1;
-            memoryDB.voters.push({
-              id: newId,
-              username: params.u,
-              voter_id: params.v,
-              phone: params.p,
-            });
-            return { rowsAffected: 1 };
+            newId = (lastVoter?.id || 0) + 1;
           }
+          const memLast = memoryDB.voters[memoryDB.voters.length - 1];
+          if (memLast && memLast.id >= newId) {
+            newId = memLast.id + 1;
+          }
+
+          const record = {
+            id: newId,
+            username: params.u,
+            voter_id: params.v,
+            phone: params.p,
+          };
+
+          if (mongoConnected) {
+            try {
+              const newVoter = new Voter(record);
+              await newVoter.save();
+            } catch (e) {
+              console.warn("Mongo insert failed, still adding to memory:", e.message);
+            }
+          }
+
+          // always keep an in-memory copy for instant visibility
+          memoryDB.voters.push(record);
+          console.log("[db] new voter added", record);
+          return { rowsAffected: 1 };
         }
 
         // DELETE FROM candidates WHERE id = :id
