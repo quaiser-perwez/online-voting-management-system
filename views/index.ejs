@@ -1,3 +1,69 @@
-<h1>Online Voting System</h1>
-<a href="/admin">Admin Login</a>
-<a href="/voter">Voter Login</a>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Online Voting System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .button-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    a {
+      display: inline-block;
+      padding: 12px 30px;
+      margin: 10px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+    .admin-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .admin-btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .voter-btn {
+      background-color: #28a745;
+      color: white;
+    }
+    .voter-btn:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗳️ Online Voting System</h1>
+    <div class="button-group">
+      <a href="/admin" class="admin-btn">Admin Login</a>
+      <a href="/voter" class="voter-btn">Voter Login</a>
+    </div>
+  </div>
+</body>
+</html>
