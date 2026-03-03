@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Admin = require("../models/Admin");
-const Candidate = require("../models/Candidate");
+const Admin = require("../models/admin");
+const Candidate = require("../models/candidate");
 
 router.get("/admin", (req,res)=>{
   res.render("adminLogin");

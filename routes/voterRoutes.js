@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Voter = require("../models/Voter");
-const Candidate = require("../models/Candidate");
+const Voter = require("../models/voter");
+const Candidate = require("../models/candidate");
 
 router.get("/", (req,res)=>{
   res.render("index");
