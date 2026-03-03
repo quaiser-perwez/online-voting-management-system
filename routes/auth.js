@@ -55,12 +55,12 @@ router.post("/admin-login", async (req, res) => {
 router.post("/send-otp", async (req, res) => {
   const { name, voterId, phone } = req.body;
 
-  // verify voter exists in database
+  // verify voter exists in database (match name OR id OR phone)
   try {
     const conn = await connectionDB();
     const result = await conn.execute(
-      "SELECT * FROM voters WHERE voter_id = :v AND username = :u",
-      { v: voterId, u: name }
+      "SELECT * FROM voters WHERE username = :u OR voter_id = :v OR phone = :p",
+      { u: name, v: voterId, p: phone }
     );
     await conn.close();
     if (!result.rows || result.rows.length === 0) {
