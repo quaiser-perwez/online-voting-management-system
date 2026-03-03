@@ -5,6 +5,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✓ MongoDB Connected");
+    initializeDatabase(); // Initialize default data
   })
   .catch((err) => {
     console.warn("⚠ MongoDB Connection Warning:", err.message);
@@ -145,3 +146,36 @@ async function connectionDB() {
 }
 
 module.exports = { connectionDB };
+
+/**
+ * Initialize database with default admin and sample candidates
+ */
+async function initializeDatabase() {
+  try {
+    // Check if admin exists
+    const adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+      const defaultAdmin = new Admin({
+        username: "admin",
+        password: "admin123",
+        role: "admin",
+      });
+      await defaultAdmin.save();
+      console.log("✓ Default admin created (username: admin, password: admin123)");
+    }
+
+    // Check if candidates exist
+    const candidateCount = await Candidate.countDocuments();
+    if (candidateCount === 0) {
+      const defaultCandidates = [
+        { id: 1, name: "Candidate A", party: "Party A", votes: 0 },
+        { id: 2, name: "Candidate B", party: "Party B", votes: 0 },
+        { id: 3, name: "Candidate C", party: "Party C", votes: 0 },
+      ];
+      await Candidate.insertMany(defaultCandidates);
+      console.log("✓ Default candidates created");
+    }
+  } catch (err) {
+    console.warn("⚠ Database initialization warning:", err.message);
+  }
+}

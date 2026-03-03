@@ -4,7 +4,13 @@ const { connectionDB } = require("../db");
 
 // Admin Panel
 router.get("/", async (req, res) => {
-  if (!req.session.user || (req.session.user.ROLE !== "admin" && req.session.user.role !== "admin")) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  
+  // Check role (works for both MongoDB lowercase and Oracle uppercase)
+  const role = req.session.user.role || req.session.user.ROLE || "";
+  if (role.toString().toLowerCase() !== "admin") {
     return res.redirect("/login");
   }
 
@@ -64,7 +70,12 @@ router.get("/delete/:id", async (req, res) => {
 });
 
 router.get("/add-voter", (req, res) => {
-  if (!req.session.user || req.session.user.ROLE !== "admin") {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  
+  const role = req.session.user.role || req.session.user.ROLE || "";
+  if (role.toString().toLowerCase() !== "admin") {
     return res.redirect("/login");
   }
 
@@ -92,7 +103,12 @@ router.post("/add-voter", async (req, res) => {
 
 // View Results
 router.get("/results", async (req, res) => {
-  if (!req.session.user || req.session.user.ROLE !== "admin") {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  
+  const role = req.session.user.role || req.session.user.ROLE || "";
+  if (role.toString().toLowerCase() !== "admin") {
     return res.redirect("/login");
   }
 

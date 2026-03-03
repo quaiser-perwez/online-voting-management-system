@@ -29,14 +29,14 @@ router.post("/admin-login", async (req, res) => {
       const admin = result.rows[0];
       console.log("Admin data received:", admin);
       
-      // Oracle returns column names in uppercase
-      if (admin.ROLE && admin.ROLE.toUpperCase() === 'ADMIN') {
-        admin.ROLE = 'admin';
+      // Check role (MongoDB returns lowercase, Oracle returns uppercase)
+      const role = admin.role || admin.ROLE || "";
+      if (role.toString().toLowerCase() === "admin") {
         req.session.user = admin;
         console.log("Session set, redirecting to /admin");
         return res.redirect("/admin");
       } else {
-        console.log("Role not admin:", admin.ROLE);
+        console.log("Role not admin:", role);
         return res.render("login", { error: "Invalid role" });
       }
     } else {
