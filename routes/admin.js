@@ -70,6 +70,7 @@ router.get("/delete/:id", async (req, res) => {
 });
 
 router.get("/add-voter", (req, res) => {
+  console.log("GET add-voter session", req.session.user);
   if (!req.session.user) {
     return res.redirect("/login");
   }
@@ -84,6 +85,7 @@ router.get("/add-voter", (req, res) => {
 
 router.post("/add-voter", async (req, res) => {
   const { username, voterId } = req.body;
+  console.log("Add voter request", { username, voterId, session: req.session.user });
 
   let conn;
   try {
@@ -129,6 +131,56 @@ router.get("/results", async (req, res) => {
 router.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/login");
+});
+
+// list all voters and allow quick lookup
+router.get("/voters", async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  const role = req.session.user.role || req.session.user.ROLE || "";
+  if (role.toString().toLowerCase() !== "admin") {
+    return res.redirect("/login");
+  }
+
+  let conn;
+  try {
+    conn = await connectionDB();
+    const result = await conn.execute("SELECT * FROM voters");
+    return res.render("voters", { voters: result.rows });
+  } catch (err) {
+    console.error('Error fetching voters:', err);
+    return res.render("voters", { voters: [], error: 'Error loading voters' });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+// check existence of voter by name/id/phone and inform admin
+router.post("/voters/check", async (req, res) => {
+  const { name = "", voterId = "", phone = "" } = req.body;
+  let conn;
+  try {
+    conn = await connectionDB();
+    const result = await conn.execute(
+      `SELECT * FROM voters WHERE LOWER(username)=LOWER(:name) OR voter_id=:voterId OR phone=:phone`,
+      { name, voterId, phone }
+    );
+    const found = result.rows && result.rows.length > 0;
+    const message = found
+      ? 'Voter is registered and can now login via the normal \u201Clogin\u201D page.'
+      : 'No matching voter found. You may register a new voter below.';
+    return res.render("voters", {
+      voters: result.rows || [],
+      message,
+      query: { name, voterId, phone },
+    });
+  } catch (err) {
+    console.error('Lookup error:', err);
+    return res.render("voters", { voters: [], error: 'Lookup failed' });
+  } finally {
+    if (conn) await conn.close();
+  }
 });
 
 module.exports = router;

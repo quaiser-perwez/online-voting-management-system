@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Registered Voters - Admin</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="india-theme">
+
+    <nav class="india-nav">
+        <div class="nav-brand">
+            <div class="ashoka-chakra">⊛</div>
+            <div class="logo-text">Admin Panel 🛡️</div>
+        </div>
+        <ul>
+            <li><a href="/admin/add-voter">Add Voter</a></li>
+            <li><a href="/admin/voters">Show Voters</a></li>
+            <li><a href="/admin/results">View Results</a></li>
+            <li><a href="/admin/logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="flag-stripe"></div>
+
+    <div class="container">
+        <div class="card india-card">
+            <h3>📋 Registered Voters</h3>
+
+            <% if (error) { %>
+                <p style="color:red; text-align:center;"><%= error %></p>
+            <% } %>
+            <% if (message) { %>
+                <p style="color:green; text-align:center;"><%= message %></p>
+            <% } %>
+
+            <form action="/admin/voters/check" method="POST" style="margin-bottom:1rem;">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" value="<%= query ? query.name : '' %>" />
+                </div>
+                <div class="form-group">
+                    <label>Voter ID</label>
+                    <input type="text" name="voterId" value="<%= query ? query.voterId : '' %>" />
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" value="<%= query ? query.phone : '' %>" />
+                </div>
+                <button type="submit" class="btn india-btn-primary">Check</button>
+            </form>
+
+            <table class="manage-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Voter ID</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% voters.forEach(v => { %>
+                        <% const id = v.ID !== undefined ? v.ID : v.id; %>
+                        <% const username = v.USERNAME || v.username || ''; %>
+                        <% const vid = v.VOTER_ID || v.voter_id || ''; %>
+                        <% const phone = v.PHONE || v.phone || ''; %>
+                        <tr>
+                            <td><%= id %></td>
+                            <td><%= username %></td>
+                            <td><%= vid %></td>
+                            <td><%= phone %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <p style="text-align:center; margin-top:1rem;">
+                Not listed? <a href="/register">Register a new voter</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
