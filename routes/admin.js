@@ -79,7 +79,7 @@ router.get("/add-voter", (req, res) => {
     return res.redirect("/login");
   }
 
-  res.render("add-voter");
+  res.render("add-voters");
 });
 
 router.post("/add-voter", async (req, res) => {
@@ -93,9 +93,9 @@ router.post("/add-voter", async (req, res) => {
       { u: username, v: voterId },
       { autoCommit: true }
     );
-    return res.render("add-voter", { success: "Voter added successfully!" });
+    return res.render("add-voters", { success: "Voter added successfully!" });
   } catch (err) {
-    return res.render("add-voter", { error: "Error adding voter: " + err.message });
+    return res.render("add-voters", { error: "Error adding voter: " + err.message });
   } finally {
     if (conn) await conn.close();
   }
