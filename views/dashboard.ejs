@@ -1,50 +1,46 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-  <title>Admin Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #007bff; }
-    form { border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin: 20px 0; }
-    input { padding: 8px; width: 200px; margin-right: 10px; }
-    button { padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    th { background-color: #007bff; color: white; }
-    a { color: #007bff; text-decoration: none; margin-top: 20px; display: inline-block; }
-    a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Vote Now</title>
+    <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
-  <h1>Admin Dashboard</h1>
-  
-  <div>
-    <h3>Add Candidate</h3>
-    <form method="POST" action="/add-candidate">
-      <input type="text" name="name" placeholder="Candidate Name" required>
-      <button type="submit">Add</button>
-    </form>
-  </div>
 
-  <h3>Candidate Results</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Candidate Name</th>
-        <th>Votes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% candidates.forEach(candidate => { %>
-        <tr>
-          <td><%= candidate.name %></td>
-          <td><%= candidate.votes %></td>
-        </tr>
-      <% }); %>
-    </tbody>
-  </table>
+<body class="india-theme">
 
-  <a href="/">Logout</a>
+    <nav class="india-nav">
+        <div class="nav-brand">
+            <div class="ashoka-chakra">⊛</div>
+            <div class="logo-text">Vote Now</div>
+        </div>
+        <ul>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="flag-stripe"></div>
+
+    <div class="container">
+        <h2 style="text-align:center;">🇮🇳 Choose Your Candidate 🇮🇳</h2>
+
+        <div class="candidate-grid">
+            <% candidates.forEach(c=> { %>
+                <div class="candidate-card">
+                    <h3>
+                        <%= c.NAME %>
+                    </h3>
+                    <p>
+                        <%= c.PARTY %>
+                    </p>
+                    <form action="/vote/<%= c.ID %>" method="POST">
+                        <button type="submit" class="btn india-btn-primary">Vote Now</button>
+                    </form>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+
 </body>
+
 </html>
