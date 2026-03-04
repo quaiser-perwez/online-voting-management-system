@@ -138,23 +138,24 @@ router.get("/voters", async (req, res) => {
     res.render("voters", {
       voters,
       error: null,
-      message: null
+      message: null,
+      query: {}   // ⭐ यह add करना जरूरी है
     });
 
   } catch (err) {
 
-    console.error("Error loading voters:", err);
+    console.log(err);
 
     res.render("voters", {
       voters: [],
       error: "Error loading voters",
-      message: null
+      message: null,
+      query: {}
     });
 
   }
 
 });
-
 
 // ---------- CHECK VOTER ----------
 router.post("/voters/check", async (req, res) => {
