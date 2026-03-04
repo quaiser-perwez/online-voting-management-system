@@ -26,14 +26,19 @@
     <div class="container">
         <h2 style="text-align:center;">🇮🇳 Live Election Results 🇮🇳</h2>
 
-        <div class="card india-card">
+        <div class="card india-card" style="text-align:center; background: linear-gradient(135deg, #fff9e6 0%, #e8f5e9 100%); margin-bottom:30px;">
             <% let totalVotes = 0;
-               // compute total with either field name
                candidates.forEach(c=> {
                    const v = (c.VOTES !== undefined) ? c.VOTES : (c.votes || 0);
                    totalVotes += v;
                });
             %>
+            <h3 style="color:#138808; margin:10px 0;">📊 Total Votes Cast</h3>
+            <p style="font-size:2.5rem; color:#0047AB; font-weight:bold; margin:15px 0;"><%= totalVotes %></p>
+            <p style="color:#666; margin:0;">Votes received in this election</p>
+        </div>
+
+        <div class="card india-card">
 
             <% candidates.forEach(c=> {
                    const name = c.NAME || c.name || 'Unknown';
