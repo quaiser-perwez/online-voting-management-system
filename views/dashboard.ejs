@@ -33,7 +33,7 @@
                 <div class="candidate-card">
                     <h3><%= name %></h3>
                     <p><%= party %></p>
-                    <p style="font-size:0.9rem; color:#555; margin:8px 0;">Votes: <%= votes %></p>
+                        <!-- votes hidden for voters until after election ends -->
                     <form action="/vote/<%= id %>" method="POST">
                         <button type="submit" class="btn india-btn-primary">Vote Now</button>
                     </form>

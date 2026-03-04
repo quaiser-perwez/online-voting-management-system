@@ -41,7 +41,10 @@
         <label>Voter ID</label>
         <input type="text" name="voterId" required />
       </div>
-     
+      <div class="form-group">
+        <label>Phone (10 digits)</label>
+        <input type="text" name="phone" pattern="[0-9]{10}" title="10 digit phone number" required />
+      </div>
       <button type="submit" class="btn india-btn-primary" style="width:100%;">
         Add Voter
       </button>

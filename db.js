@@ -1,4 +1,9 @@
+const fs = require("fs");
+const path = require("path");
 const mongoose = require("mongoose");
+
+// persistent file used when MongoDB is unavailable
+const dataFile = path.join(__dirname, "memory.json");
 
 // In-memory fallback database (when MongoDB is not available)
 const memoryDB = {
@@ -16,6 +21,39 @@ const memoryDB = {
   ],
   voters: [],
 };
+
+// helper functions to load/save memoryDB
+function loadMemory() {
+  try {
+    if (fs.existsSync(dataFile)) {
+      const data = JSON.parse(fs.readFileSync(dataFile, "utf8"));
+      // merge arrays preserving existing defaults
+      if (data.candidates) {
+        memoryDB.candidates = data.candidates;
+      }
+      if (data.voters) {
+        memoryDB.voters = data.voters;
+      }
+      if (data.admin) {
+        memoryDB.admin = data.admin;
+      }
+      console.log("? Loaded memory DB from file");
+    }
+  } catch (e) {
+    console.warn("! failed to load memory file, starting fresh", e.message);
+  }
+}
+
+function saveMemory() {
+  try {
+    fs.writeFileSync(dataFile, JSON.stringify(memoryDB, null, 2));
+  } catch (e) {
+    console.warn("! failed to save memory to file", e.message);
+  }
+}
+
+// attempt load on startup
+loadMemory();
 
 let mongoConnected = false;
 
@@ -179,8 +217,7 @@ async function connectionDB() {
               name: params.name,
               party: params.party,
               votes: 0,
-            });
-            return { rowsAffected: 1 };
+            });            saveMemory();            return { rowsAffected: 1 };
           }
         }
 
@@ -217,7 +254,7 @@ async function connectionDB() {
 
           // always keep an in-memory copy for instant visibility
           memoryDB.voters.push(record);
-          console.log("[db] new voter added", record);
+          saveMemory();
           return { rowsAffected: 1 };
         }
 
@@ -237,6 +274,7 @@ async function connectionDB() {
             );
             if (index !== -1) {
               memoryDB.candidates.splice(index, 1);
+              saveMemory();
               return { rowsAffected: 1 };
             }
             return { rowsAffected: 0 };

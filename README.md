@@ -69,9 +69,9 @@ If you deploy to a platform like Heroku, Vercel, or Railway, set the same enviro
 
 ## 📝 Notes
 
-- You must supply a valid `MONGO_URI` to avoid runtime errors.
+- You must supply a valid `MONGO_URI` to avoid runtime errors; without Mongo the app will fall back to an in-memory database that is persisted to `memory.json` in the project root. Candidates and voters you add will survive restarts even when Mongo isn’t available, but the file must be writable.
 - Ensure `dotenv` is installed (already a dependency).
-- `node_modules` and `.env` are excluded by `.gitignore`.
+- `node_modules` and `.env` are excluded by `.gitignore`.  `memory.json` is tracked so offline data isn’t lost; feel free to add it to `.gitignore` if you prefer not to commit it.
 
 Once you push, anyone cloning the repo can follow these steps; the app remains **fully working** when environment variables are configured.
 
