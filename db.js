@@ -115,9 +115,9 @@ const adminSchema = new mongoose.Schema(
   { collection: "admin" }
 );
 
-const Candidate = mongoose.model("Candidate", candidateSchema);
-const Voter = mongoose.model("Voter", voterSchema);
-const Admin = mongoose.model("Admin", adminSchema);
+const Candidate = mongoose.models.Candidate || mongoose.model("Candidate", candidateSchema);
+const Voter = mongoose.models.Voter || mongoose.model("Voter", voterSchema);
+const Admin = mongoose.models.Admin || mongoose.model("Admin", adminSchema);
 
 /**
  * Simulates a database connection with execute() method
