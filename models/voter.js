@@ -36,4 +36,4 @@ const voterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model("Voter", voterSchema);
+module.exports = mongoose.models.Voter || mongoose.model("Voter", voterSchema);
