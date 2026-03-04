@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Live Results</title>
     <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="india-theme">
@@ -26,23 +27,29 @@
         <h2 style="text-align:center;">🇮🇳 Live Election Results 🇮🇳</h2>
 
         <div class="card india-card">
-            <% let totalVotes=0; %>
-                <% candidates.forEach(c=> { totalVotes += c.VOTES; }); %>
+            <% let totalVotes = 0;
+               // compute total with either field name
+               candidates.forEach(c=> {
+                   const v = (c.VOTES !== undefined) ? c.VOTES : (c.votes || 0);
+                   totalVotes += v;
+               });
+            %>
 
-                    <% candidates.forEach(c=> {
-                        let percent = totalVotes === 0 ? 0 : Math.round((c.VOTES / totalVotes) * 100);
-                        %>
-                        <div class="result-item">
-                            <strong>
-                                <%= c.NAME %> (<%= c.PARTY %>)
-                            </strong> - <%= c.VOTES %> votes
-                                <div class="progress-bar-tag">
-                                    <div class="progress-bar-fill" style="width: <%= percent %>%">
-                                        <%= percent %>%
-                                    </div>
-                                </div>
+            <% candidates.forEach(c=> {
+                   const name = c.NAME || c.name || 'Unknown';
+                   const party = c.PARTY || c.party || '';
+                   const votes = (c.VOTES !== undefined) ? c.VOTES : (c.votes || 0);
+                   let percent = totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 100);
+            %>
+                <div class="result-item">
+                    <strong><%= name %> (<%= party %>)</strong> - <%= votes %> votes
+                    <div class="progress-bar-tag">
+                        <div class="progress-bar-fill" style="width: <%= percent %>%">
+                            <%= percent %>%
                         </div>
-                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
         </div>
     </div>
 

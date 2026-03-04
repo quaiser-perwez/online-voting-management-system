@@ -2,69 +2,101 @@ const express = require("express");
 const router = express.Router();
 const { connectionDB } = require("../db");
 
-// Dashboard (Voting Page)
+
+// dashboard
 router.get("/dashboard", async (req, res) => {
-	if (!req.session.user) return res.redirect("/login");
 
-	let conn;
-	try {
-		conn = await connectionDB();
-		const result = await conn.execute("SELECT * FROM candidates");
-		return res.render("dashboard", { candidates: result.rows });
-	} catch (err) {
-		console.error('Error loading dashboard:', err);
-		return res.render("dashboard", { candidates: [], error: 'Error loading candidates' });
-	} finally {
-		if (conn) await conn.close();
-	}
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  try {
+
+    const conn = await connectionDB();
+
+    const result = await conn.execute(
+      "SELECT * FROM candidates"
+    );
+
+    await conn.close();
+
+    res.render("dashboard", {
+      candidates: result.rows
+    });
+
+  } catch (err) {
+
+    console.error("Dashboard error:", err);
+
+    res.render("dashboard", {
+      candidates: []
+    });
+
+  }
+
 });
 
-// Vote
-router.post("/vote/:id", async (req, res) => {
-	if (!req.session.user) return res.redirect("/login");
 
-	const id = req.params.id;
+// vote route
+router.post("/vote", async (req, res) => {
 
-	let conn;
-	try {
-		conn = await connectionDB();
-		await conn.execute(
-			"UPDATE candidates SET votes = votes + 1 WHERE id = :id",
-			{ id },
-			{ autoCommit: true }
-		);
-		// set a session message so success page can show feedback
-		req.session.voteMessage = 'Your vote has been recorded. Thank you!';
-		return res.redirect("/success");
-	} catch (err) {
-		console.error('Error voting:', err);
-		return res.redirect("/dashboard");
-	} finally {
-		if (conn) await conn.close();
-	}
-});
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
 
-// Success Page
-router.get("/success", (req, res) => {
-	const msg = req.session.voteMessage || null;
-	// clear the message after reading
-	delete req.session.voteMessage;
-	res.render("success", { message: msg });
-});
+  const { candidateId } = req.body;
+  const voter = req.session.user;
 
-// Results
-router.get("/results", async (req, res) => {
-	let conn;
-	try {
-		conn = await connectionDB();
-		const result = await conn.execute("SELECT * FROM candidates");
-		return res.render("result", { candidates: result.rows });
-	} catch (err) {
-		console.error('Error loading results:', err);
-		return res.render("result", { candidates: [], error: 'Error loading results' });
-	} finally {
-		if (conn) await conn.close();
-	}
+  try {
+
+    const conn = await connectionDB();
+
+    // check if voter already voted
+    const check = await conn.execute(
+      "SELECT voted FROM voters WHERE voter_id = :v",
+      { v: voter.voterId }
+    );
+
+    if (check.rows[0][0] === 1) {
+
+      await conn.close();
+
+      return res.render("success", {
+        message: "You already voted!"
+      });
+
+    }
+
+    // increase vote count
+    await conn.execute(
+      "UPDATE candidates SET votes = votes + 1 WHERE id = :id",
+      { id: candidateId },
+      { autoCommit: true }
+    );
+
+    // mark voter voted
+    await conn.execute(
+      "UPDATE voters SET voted = 1 WHERE voter_id = :v",
+      { v: voter.voterId },
+      { autoCommit: true }
+    );
+
+    await conn.close();
+
+    res.render("success", {
+      message: "Vote submitted successfully!"
+    });
+
+  } catch (err) {
+
+    console.error("Voting error:", err);
+
+    res.render("success", {
+      message: "Error submitting vote"
+    });
+
+  }
+
 });
 
 module.exports = router;
