@@ -26,15 +26,17 @@ app.use(
   })
 );
 
-// optional: connect to Mongo if needed
-// mongoose.connect(process.env.MONGO_URI)
-//   .then(() => console.log("MongoDB Connected"))
-//   .catch((err) => console.log(err));
+// mongoose is required in db.js which already handles the
+// connection logic (including logging and fallback). we keep
+// the require here so other modules can import mongoose if
+// necessary, but avoid calling connect twice.
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
+// NOTE: connection initiated by db.js; no explicit connect call
+// is needed here. keeping this file lean avoids duplicate
+// connections that could confuse the logs or consume extra
+// resources.
+
 
 // home routes
 app.get("/", (req, res) => {

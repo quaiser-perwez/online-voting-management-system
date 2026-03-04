@@ -3,7 +3,10 @@ const path = require("path");
 const mongoose = require("mongoose");
 
 // persistent file used when MongoDB is unavailable
-const dataFile = path.join(__dirname, "memory.json");
+// If deploying to a host with a persistent disk (e.g. Render), set
+// the environment variable DATA_DIR to the mounted path so the file
+// is written to persistent storage. Otherwise fallback to project dir.
+const dataFile = path.join(process.env.DATA_DIR || __dirname, "memory.json");
 
 // In-memory fallback database (when MongoDB is not available)
 const memoryDB = {
@@ -14,11 +17,10 @@ const memoryDB = {
       role: "admin",
     },
   ],
-  candidates: [
-    { id: 1, name: "Candidate A", party: "Party A", votes: 0 },
-    { id: 2, name: "Candidate B", party: "Party B", votes: 0 },
-    { id: 3, name: "Candidate C", party: "Party C", votes: 0 },
-  ],
+  // start with an empty candidate list so we don't auto-reset any
+  // existing deployments. Default sample candidates are only
+  // inserted into MongoDB when explicitly allowed (see below).
+  candidates: [],
   voters: [],
 };
 
@@ -188,6 +190,8 @@ async function connectionDB() {
             );
             if (candidate) {
               candidate.votes = (candidate.votes || 0) + 1;
+              // persist vote change to disk so increments survive restarts
+              saveMemory();
             }
             return { rowsAffected: candidate ? 1 : 0 };
           }
@@ -336,15 +340,19 @@ async function initializeDatabase() {
     }
 
     const candidateCount = await Candidate.countDocuments();
-    if (candidateCount === 0) {
-      const defaultCandidates = [
-        { id: 1, name: "Candidate A", party: "Party A", votes: 0 },
-        { id: 2, name: "Candidate B", party: "Party B", votes: 0 },
-        { id: 3, name: "Candidate C", party: "Party C", votes: 0 },
-      ];
-      await Candidate.insertMany(defaultCandidates);
-      console.log("? Default candidates created");
-    }
+      // Only insert sample defaults when not explicitly skipped.
+      // Set SKIP_DEFAULT_CANDIDATES=true in env to avoid auto-creation.
+      if (candidateCount === 0 && process.env.SKIP_DEFAULT_CANDIDATES !== 'true') {
+        const defaultCandidates = [
+          { id: 1, name: "Narendra Modi", party: "BJP", votes: 0 },
+          { id: 2, name: "Nitish Kumar", party: "JD(U)", votes: 0 },
+          { id: 3, name: "Amit Shah", party: "BJP", votes: 0 },
+        ];
+        await Candidate.insertMany(defaultCandidates);
+        console.log("? Default candidates created");
+      } else if (candidateCount === 0) {
+        console.log("? Skipping default candidate creation (SKIP_DEFAULT_CANDIDATES=true)");
+      }
   } catch (err) {
     console.warn("Database initialization warning:", err.message);
   }

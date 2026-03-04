@@ -52,6 +52,19 @@ When pushing to GitHub, you only push source files. Sensitive data like database
 
 If you deploy to a platform like Heroku, Vercel, or Railway, set the same environment variables through the provider's settings.
 
+### 🖥️ Deploying on Render
+
+1. Create a new **Web Service** on Render and connect your GitHub repo.
+2. Set the `env` to **Node** and the build command to `npm install`, start command to `npm start` (these are already in `render.yaml`).
+3. Add the following environment variables in Render's dashboard (or `render.yaml`):
+   - `MONGO_URI` – your MongoDB Atlas connection string.
+   - (optional) `SKIP_DEFAULT_CANDIDATES=true` if you don't want sample candidates created.
+   - (optional) `DATA_DIR` – set to the mount path of a persistent disk if you're using one (e.g. `/mnt/data`).
+4. If you attach a **Persistent Disk** in Render, make sure the `DATA_DIR` env var points to it so `memory.json` survives restarts.
+5. Deploy – Render will run the build command and your service will start.
+
+During redeploys or sleep/wake cycles, votes and candidates stay safe in MongoDB (preferred) or on the persistent disk.
+
 ## 📁 Committing to GitHub
 
 1. Initialize a git repo (if not already done):
