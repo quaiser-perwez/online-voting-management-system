@@ -124,21 +124,35 @@ router.get("/results", async (req, res) => {
 
 // ---------- LIST ALL VOTERS ----------
 router.get("/voters", async (req, res) => {
+
   if (!req.session.user) return res.redirect("/login");
+
   const role = req.session.user.role || req.session.user.ROLE || "";
+
   if (role.toLowerCase() !== "admin") return res.redirect("/login");
-  let conn;
+
   try {
-    conn = await connectionDB();
-    const result = await conn.execute("SELECT * FROM voters");
-    const voters = result.rows || [];
-    res.render("voters", { voters, error: null, message: null });
+
+    const voters = await Voter.find();
+
+    res.render("voters", {
+      voters,
+      error: null,
+      message: null
+    });
+
   } catch (err) {
+
     console.error("Error loading voters:", err);
-    res.render("voters", { voters: [], error: "Error loading voters: " + err.message, message: null });
-  } finally {
-    if (conn) await conn.close();
+
+    res.render("voters", {
+      voters: [],
+      error: "Error loading voters",
+      message: null
+    });
+
   }
+
 });
 
 

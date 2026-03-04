@@ -30,6 +30,11 @@ app.use(
 // mongoose.connect(process.env.MONGO_URI)
 //   .then(() => console.log("MongoDB Connected"))
 //   .catch((err) => console.log(err));
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log(err));
 
 // home routes
 app.get("/", (req, res) => {
@@ -64,7 +69,7 @@ app.use((req, res) => {
   res.status(404).send("Not found");
 });
 
-app.use("/admin", require("./routes/admin"));
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
