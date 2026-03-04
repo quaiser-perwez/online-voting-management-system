@@ -39,6 +39,21 @@ app.get("/home", (req, res) => {
   res.render("index");
 });
 
+app.get("/logout", (req, res) => {
+
+  req.session.destroy((err) => {
+
+    if (err) {
+      console.log(err);
+      return res.redirect("/dashboard");
+    }
+
+    res.redirect("/");
+
+  });
+
+});
+
 // mount application routers
 app.use("/", authRoutes);
 app.use("/", voteRoutes);

@@ -1,0 +1,37 @@
+{
+  "admin": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin"
+    }
+  ],
+  "candidates": [
+    {
+      "id": 1,
+      "name": "Candidate A",
+      "party": "Party A",
+      "votes": 0
+    },
+    {
+      "id": 2,
+      "name": "Candidate B",
+      "party": "Party B",
+      "votes": 0
+    },
+    {
+      "id": 3,
+      "name": "Candidate C",
+      "party": "Party C",
+      "votes": 0
+    }
+  ],
+  "voters": [
+    {
+      "id": 1,
+      "username": "Quaiser Perwez",
+      "voter_id": "TJG65789",
+      "phone": "9934110444"
+    }
+  ]
+}
