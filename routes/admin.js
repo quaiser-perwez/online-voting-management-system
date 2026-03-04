@@ -127,12 +127,18 @@ router.get("/voters", async (req, res) => {
   if (!req.session.user) return res.redirect("/login");
   const role = req.session.user.role || req.session.user.ROLE || "";
   if (role.toLowerCase() !== "admin") return res.redirect("/login");
+  let conn;
   try {
-    const docs = await Voter.find().lean();
-    const voters = docs.map(v => ({ id: v._id, username: v.username, voter_id: v.voter_id, phone: v.phone }));
+    conn = await connectionDB();
+    const result = await conn.execute("SELECT * FROM voters");
+    const voters = result.rows || [];
     res.render("voters", { voters, error: null, message: null });
   } catch (err) {
     console.error("Error loading voters:", err);
+    res.render("voters", { voters: [], error: "Error loading voters: " + err.message, message: null });
+  } finally {
+    if (conn) await conn.close();
+  }
     // send message to template so admin knows something went wrong
     res.render("voters", { voters: [], error: "Error loading voters: " + err.message, message: null });
   }
@@ -142,26 +148,27 @@ router.get("/voters", async (req, res) => {
 // ---------- CHECK VOTER ----------
 router.post("/voters/check", async (req, res) => {
   const { name = "", voterId = "", phone = "" } = req.body;
+  let conn;
   try {
-    const query = {
-      $or: [
-        { username: new RegExp(`^${name}$`, "i") },
-        { voter_id: voterId },
-        { phone }
-      ]
-    };
-    const docs = await Voter.find(query).lean();
-    const found = docs.length > 0;
+    conn = await connectionDB();
+    const result = await conn.execute(
+      `SELECT * FROM voters
+       WHERE username=:u OR voter_id=:v OR phone=:p`,
+      { u: name, v: voterId, p: phone }
+    );
+    const voters = result.rows || [];
+    const found = voters.length > 0;
 
     const loginUrl = "/login?name=" + encodeURIComponent(name) + "&voterId=" + encodeURIComponent(voterId) + "&phone=" + encodeURIComponent(phone);
     const registerUrl = "/register?name=" + encodeURIComponent(name) + "&voterId=" + encodeURIComponent(voterId) + "&phone=" + encodeURIComponent(phone);
     const message = found ? `Voter is registered. <a href="${loginUrl}">Click here to login</a>.` : `No voter found. <a href="${registerUrl}">Register voter</a>.`;
 
-    const voters = docs.map(v => ({ id: v._id, username: v.username, voter_id: v.voter_id, phone: v.phone }));
     res.render("voters", { voters, message, error: null, query: { name, voterId, phone } });
   } catch (err) {
     console.error("Lookup error:", err);
     res.render("voters", { voters: [], error: "Lookup failed", message: null });
+  } finally {
+    if (conn) await conn.close();
   }
 });
 
