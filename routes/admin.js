@@ -139,9 +139,6 @@ router.get("/voters", async (req, res) => {
   } finally {
     if (conn) await conn.close();
   }
-    // send message to template so admin knows something went wrong
-    res.render("voters", { voters: [], error: "Error loading voters: " + err.message, message: null });
-  }
 });
 
 
