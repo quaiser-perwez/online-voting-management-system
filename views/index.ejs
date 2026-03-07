@@ -9,6 +9,9 @@
 </head>
 
 <body class="india-theme">
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
     <nav class="india-nav">
         <div class="nav-brand">
             <div class="ashoka-chakra">⊛</div>
@@ -23,8 +26,8 @@
     <div class="flag-stripe"
         style="background: linear-gradient(90deg, #FF9933 0%, #FF9933 33%, #FFFFFF 33%, #FFFFFF 66%, #138808 66%, #138808 100%); height: 8px; margin-bottom: 2rem;">
     </div>
-    <div class="container" style="text-align: center; margin-top: 5rem">
-        <h1 style="font-size: 3rem; margin-bottom: 1rem; color: #0047AB;">
+    <div class="container hero-section" style="text-align: center; margin-top: 5rem">
+        <h1 id="typing-text" style="font-size: 3rem; margin-bottom: 1rem; color: #0047AB;">
             🇮🇳 Your Vote, Your Voice 🇮🇳
         </h1>
         <p style="font-size: 1.2rem; margin-bottom: 2rem; color: #333;">
@@ -34,13 +37,89 @@
             Secure, fast, and transparent voting for your organisation.
         </p>
         <div style="display: flex; justify-content: center; gap: 20px">
-            <a href="/login" class="btn india-btn-primary">🗳️ Cast Your Vote</a>
+            <a href="/login" class="btn india-btn-primary cta-button" id="vote-btn">🗳️ Voter Login</a>
             <!-- <a href="/results" class="btn india-btn-secondary">📊 View Live Results</a> -->
         </div>
     </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+        <div class="feature-card">
+            <h3>🔒 Secure Voting</h3>
+            <p>Advanced encryption ensures your vote remains confidential and tamper-proof.</p>
+        </div>
+        <div class="feature-card">
+            <h3>⚡ Real-time Results</h3>
+            <p>View live election results as votes are cast, with instant updates.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🌍 Accessible Anywhere</h3>
+            <p>Vote from any device, anywhere in the world with internet access.</p>
+        </div>
+    </div>
+
     <div class="flag-stripe"
         style="background: linear-gradient(90deg, #FF9933 0%, #FF9933 33%, #FFFFFF 33%, #FFFFFF 66%, #138808 66%, #138808 100%); height: 8px; margin-top: 3rem;">
     </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2026 भारतीय मतदान प्रणाली. Powered by Democracy & Technology.</p>
+    </div>
+
+    <script>
+        // Typing effect for the main heading
+        const text = "🇮🇳 Your Vote, Your Voice 🇮🇳";
+        let index = 0;
+        const typingText = document.getElementById('typing-text');
+        typingText.textContent = '';
+
+        function typeWriter() {
+            if (index < text.length) {
+                typingText.textContent += text.charAt(index);
+                index++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+        typeWriter();
+
+        // Interactive button
+        document.getElementById('vote-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+                alert('Redirecting to secure voting portal...');
+                window.location.href = '/login';
+            }, 200);
+        });
+
+        // Simple particle effect
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = '10px';
+            particle.style.height = '10px';
+            particle.style.background = '#FF9933';
+            particle.style.borderRadius = '50%';
+            particle.style.opacity = '0.7';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = window.innerHeight + 'px';
+            document.body.appendChild(particle);
+
+            const animation = particle.animate([
+                { transform: 'translateY(0px)', opacity: 0.7 },
+                { transform: 'translateY(-' + window.innerHeight + 'px)', opacity: 0 }
+            ], {
+                duration: Math.random() * 5000 + 5000,
+                easing: 'linear'
+            });
+
+            animation.onfinish = () => particle.remove();
+        }
+
+        setInterval(createParticle, 300);
+    </script>
 </body>
 
 </html>

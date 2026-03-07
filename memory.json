@@ -24,6 +24,12 @@
       "name": "Candidate C",
       "party": "Party C",
       "votes": 0
+    },
+    {
+      "id": 4,
+      "name": "Quaiser Perwez",
+      "party": "NDA",
+      "votes": 1
     }
   ],
   "voters": [

@@ -30,12 +30,17 @@ router.post("/vote/:id", async (req, res) => {
   const voter = req.session.user;
   try {
     const conn = await connectionDB();
-    // check if voter already voted
-    const check = await conn.execute(
+    // verify voter actually exists in the database
+    const verify = await conn.execute(
       "SELECT voted FROM voters WHERE voter_id = :v",
       { v: voter.voterId }
     );
-    if (check.rows[0] && check.rows[0][0] === 1) {
+    if (!verify.rows || verify.rows.length === 0) {
+      // somehow someone forged a session or never registered
+      return res.render("success", { message: "You must register before voting." });
+    }
+    // check if voter already voted
+    if (verify.rows[0][0] === 1) {
       return res.render("success", { message: "You already voted!" });
     }
 

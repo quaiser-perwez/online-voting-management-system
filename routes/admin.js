@@ -126,14 +126,14 @@ router.get("/results", async (req, res) => {
 router.get("/voters", async (req, res) => {
 
   if (!req.session.user) return res.redirect("/login");
-
   const role = req.session.user.role || req.session.user.ROLE || "";
-
   if (role.toLowerCase() !== "admin") return res.redirect("/login");
 
+  let conn;
   try {
-
-    const voters = await Voter.find();
+    conn = await connectionDB();
+    const result = await conn.execute("SELECT * FROM voters");
+    const voters = result.rows || [];
 
     res.render("voters", {
       voters,
@@ -141,20 +141,17 @@ router.get("/voters", async (req, res) => {
       message: null,
       query: {}   // ⭐ यह add करना जरूरी है
     });
-
   } catch (err) {
-
     console.log(err);
-
     res.render("voters", {
       voters: [],
       error: "Error loading voters",
       message: null,
       query: {}
     });
-
+  } finally {
+    if (conn) await conn.close();
   }
-
 });
 
 // ---------- CHECK VOTER ----------

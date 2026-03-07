@@ -94,7 +94,8 @@ router.post("/register", async (req, res) => {
       { u: name, v: voterId, p: phone },
       { autoCommit: true }
     );
-    return res.render("register", { success: "Registration successful! You may now login.", error: null, prefill: {} });
+    // successful registration, automatically send user to login page with details prefilled
+    return res.redirect(`/login?name=${encodeURIComponent(name)}&voterId=${encodeURIComponent(voterId)}&phone=${encodeURIComponent(phone)}`);
   } catch (err) {
     console.error("Registration error:", err);
     return res.render("register", { error: "Error registering voter", success: null, prefill });
@@ -109,9 +110,29 @@ router.get("/otp", (req, res) => {
 
 
 // ---------------- VERIFY OTP ----------------
-router.post("/verify-otp", (req, res) => {
+router.post("/verify-otp", async (req, res) => {
   const { otp } = req.body;
   if (parseInt(otp) === req.session.otp) {
+    // before trusting the session voter, double-check existence
+    const voterData = req.session.voter;
+    if (!voterData) {
+      return res.redirect("/login");
+    }
+    try {
+      const conn = await connectionDB();
+      const result = await conn.execute(
+        "SELECT * FROM voters WHERE username=:u AND voter_id=:v AND phone=:p",
+        { u: voterData.name, v: voterData.voterId, p: voterData.phone }
+      );
+      if (!result.rows || result.rows.length === 0) {
+        // somehow deleted or not registered
+        return res.redirect(`/register?error=notregistered&name=${encodeURIComponent(voterData.name)}&voterId=${encodeURIComponent(voterData.voterId)}&phone=${encodeURIComponent(voterData.phone)}`);
+      }
+    } catch (err) {
+      console.error("OTP verify lookup error:", err);
+      return res.render("otp", { error: "Server error", otp: null });
+    }
+
     req.session.user = req.session.voter;
     return res.redirect("/dashboard");
   } else {
